@@ -2,7 +2,9 @@
 
 ここでは、PyCon JP 2015チュートリアル「Pythonを使った機械学習入門」に向けて、必要な環境（Python3, NumPy, SciPy, matplotlib, scikit-learn）を構築するための方法を説明します。書籍「[データサイエンティスト養成読本 機械学習入門編](http://www.amazon.co.jp/%E3%83%87%E3%83%BC%E3%82%BF%E3%82%B5%E3%82%A4%E3%82%A8%E3%83%B3%E3%83%86%E3%82%A3%E3%82%B9%E3%83%88%E9%A4%8A%E6%88%90%E8%AA%AD%E6%9C%AC-%E6%A9%9F%E6%A2%B0%E5%AD%A6%E7%BF%92%E5%85%A5%E9%96%80%E7%B7%A8-Software-Design-plus/dp/toc/4774176311」)に書いた内容をベースにしていますが、内容には違いがあります。
 
-LinuxおよびMacへのインストールについては、pyenvというツールを利用します。pyenvについては、後述します。
+LinuxおよびMacへのインストールについては、pyenvというツールを利用します。pyenvについては、後述します。利用しているOSについての説明を読んだあとに、最後の「動作確認」をやってください。
+
+本ドキュメント執筆時点で、Pythonのバージョン3.5.0がリリースされていますが、筆者が動作を確認していないことと、pyenvが未対応なことにより、ここでは3.4.3をインストールします。
 
 # LinuxまたはMacへのインストール
 
@@ -24,7 +26,7 @@ pyenvは、Ubuntuのaptパッケージとして存在しないので、GitHubか
 ```
 また、次はpyenvというより、NumPy、SciPy、matplotlibのインストールに必要なパッケージなのですが、ついでにここでインストールします。
 ```
-> sudo apt-get install -y libfreetype6-dev libblas-dev liblapack-dev gfortran
+> sudo apt-get install -y libfreetype6-dev libblas-dev liblapack-dev gfortran tk-dev
 ```
 
 ## pyenvのインストール(Mac)
@@ -53,32 +55,34 @@ eval "$(pyenv init -)"
 ```
 
 ## Pythonのインストール
-次にPython3をインストールして、Python3が動くように切り替えます。このドキュメントを書いている時点で最新バージョンは3.5.0なのでそれを選択します。ほかにインストール可能なバージョンは、次のようにすれば一覧が出てきます。
+次にPython3をインストールして、Python3が動くように切り替えます。ここではバージョン3.4.3をインストールしますが、ほかにインストール可能なバージョンは、次のようにすれば一覧が出てきます。
 ```
 > pyenv install --list
 ```
-次のように入力します。
+インストールするには次のように入力します。
 ```
-> pyenv install 3.5.0
+> pyenv install 3.4.3
 ```
-インストールにはしばらく時間がかかります。終わったら次のように入力してバージョンを3.5.0に切り替えます。
+インストールにはしばらく時間がかかります。終わったら次のように入力してバージョンを3.4.3に切り替えます。
 ```
-> pyenv global 3.5.0
+> pyenv global 3.4.3
 > pyenv rehash
 ```
 試しに`python --version`と入力するとバージョンが表示されるはずです。
 
-最後にNumPy、SciPy、matplotlib、scikit-learnのインストールです。次の4行を入力してください。
+最後にNumPy、SciPy、matplotlib、scikit-learnのインストールです。次の5行を入力してください。
 ```
+> pip install --upgrade pip
 > pip install numpy
 > pip install scipy
 > pip install matplotlib
 > pip install scikit-learn
 ```
 
+> 
 # Windowsへのインストール
 
-ここでは、Windowsへのインストールについて説明します。以下64ビット版を仮定します。まずは次のURLからPythonのバージョン3.5.0のインストールイメージ「Windows x86-64 MSI installer」をダウンロードして実行します。
+ここでは、Windowsへのインストールについて説明します。以下は64ビット版のバージョン3.4.3をインストールする方法ですが、。まずは次のURLからPythonのバージョン3.4.3のインストールイメージ「Windows x86-64 MSI installer」をダウンロードして実行します。
 
 [https://www.python.org/downloads/windows/](https://www.python.org/downloads/windows/)
 
@@ -88,7 +92,7 @@ LinuxとMacのときのようにpipでNumPyやSciPyを入れようとすると�
 
 （[http://www.lfd.uci.edu/~gohlke/pythonlibs/](http://www.lfd.uci.edu/~gohlke/pythonlibs/)）
 
-まずGohlke氏のページに行って、「numpy‑1.9.2+mkl‑cp34‑none‑win_amd64.whl」と「scipy‑0.15.1‑cp34‑none‑win_amd64.whl」をダウンロードします。もしインストールしたPythonのバージョンが3.4.3の64ビット版以外のとき、ここではそのバージョンに応じたものをダウンロードしてください。
+まずGohlke氏のページに行って、「numpy‑1.9.2+mkl‑cp34‑none‑win_amd64.whl」と「scipy‑0.15.1‑cp34‑none‑win_amd64.whl」をダウンロードします。もしインストールしたPythonのバージョンが3.4.3の64ビット版以外のとき、ここではそのバージョンに応じたものをダウンロードしてください。このファイル名の「cp34」の34がPythonのバージョンを示します。
 
 そして、これらのwhlファイルがある場所に`cd`して、次のようにすればNumPyとSciPyがインストールされます。
 
@@ -131,5 +135,32 @@ pyenvの使い方の詳細は次のように入力し、出てくるヘルプ画
 ```
 
 # 動作確認
+ここでは、numpy/scipy/matplotlib/scikit-learnが正しくインストールされたかチェックする方法について説明します。
 
+次のプログラムを入力して、ファイル`check.py`として保存します（間違えないようにコピーアンドペーストしてください）。
 
+```
+import numpy as np
+from scipy import sparse
+import matplotlib.pyplot as plt
+from sklearn import svm
+
+w = np.array([[0, 1], [1, 2], [2, 1]])
+a = sparse.lil_matrix((3, 3))
+a[0, 0] = a[1, 1] = a[2, 2] = 1
+x = a.dot(w)
+y = np.arange(3)
+svc = svm.SVC().fit(x, y)
+x = np.r_[x, np.array([[3, svc.predict(np.array([[0, 0]]))]])]
+plt.plot(x[:, 0], x[:, 1])
+plt.show()
+```
+
+そして、コマンドラインから実行します。
+```
+> python check.py
+```
+
+次のような画面が表示されればOKです。
+
+![インストール確認画面](check.png)
