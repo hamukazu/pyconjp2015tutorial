@@ -29,6 +29,9 @@ class:center, middle
 ---
 ## 推薦図書（というか宣伝）
 
+<img src="yosei.png" height=400/>
+
+[http://bit.ly/yoseiml](http://bit.ly/yoseiml)
 
 ---
 # 機械学習とは
@@ -354,5 +357,65 @@ array([ 0. ,  0.1,  0.2,  0.3,  0.4,  0.5,  0.6,  0.7,  0.8,  0.9])
 array([ 0.        ,  0.11111111,  0.22222222,  0.33333333,  0.44444444,
         0.55555556,  0.66666667,  0.77777778,  0.88888889,  1.        ])
 ```
-「0から1まで等間隔に10個の点を取り出せ」
+「0から1まで等間隔に10個の点を取り出せ(区間数は9、植木算)」
 
+---
+# 曲線グラフ
+
+```
+>>> x=np.linspace(-5,5,100)
+>>> y=x**2 # ブロードキャスティング
+>>> plt.plot(x,y)
+[<matplotlib.lines.Line2D object at 0x10e9d0048>]
+>>> plt.show()
+```
+
+<img src="fig2-32.png" height=300/>
+
+100くらいに刻めば人間の目には曲線に見える（わりとてきとー）
+---
+# 等高線のための準備
+
+* meshgrid(): メッシュを作成する
+* ravel(): 多次元配列を一次元配列に変換する
+
+```
+>>> x=np.array([1,2,3])
+>>> y=np.array([4,5,6])
+>>> X,Y=np.meshgrid(x,y)
+>>> X
+array([[1, 2, 3],
+       [1, 2, 3],
+       [1, 2, 3]])
+>>> Y
+array([[4, 4, 4],
+       [5, 5, 5],
+       [6, 6, 6]])
+>>> X.ravel()
+array([1, 2, 3, 1, 2, 3, 1, 2, 3])
+>>> Y.ravel()
+array([4, 4, 4, 5, 5, 5, 6, 6, 6])
+```
+
+---
+# 等高線
+
+```
+>>> import numpy as np
+>>> import matplotlib.pyplot as plt
+>>> x=np.linspace(-5,5,200)
+>>> y=np.linspace(-5,5,200)
+>>> X,Y=np.meshgrid(x,y)
+>>> Z=X.ravel()**2-Y.ravel()**2
+>>> plt.contourf(X,Y,Z.reshape(X.shape))
+<matplotlib.contour.QuadContourSet object at 0x104bb2048>
+>>> plt.show()
+```
+
+---
+class:middle,center
+
+## （いよいよ）
+# scikit-learn
+
+---
