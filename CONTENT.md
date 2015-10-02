@@ -53,12 +53,18 @@ class:center, middle
 # 機械学習の種類
 
 * 教師付き
+    - 正解（ラベル）が与えられている
+    - 訓練データが入力と出力（あるいは、特徴ベクトルとラベル）の組である
 * 教師なし
+    - 正解が与えられていない
+    - 訓練データは入力（特徴ベクトル）のみである
 * 半教師付き
+    - 部分的に正解が与えられている
 
 ---
 # 教師付き学習の例
 
+* 植物の分類
 ---
 # 教師なし学習の例
 
@@ -94,10 +100,9 @@ print 3 * 5 # => 15
 ---
 # 配列と行列
 
-* NumPyには配列型がある
-* 2次元配列によって行列を表現するのが一般的である
-* `matrix`型というのもあるのだが、一般にはあまり使われていない。
-* 行列の積にはnp.dotをつかう
+* NumPyには配列型がある（Python本体にあるのは「リスト型」）
+* 2次元配列によって行列を表現するのが一般的である（要素には`a[i,j]`でアクセス）
+* `matrix`型というのもあるのだが、一般にほとんど使われていない。
 
 ---
 
@@ -107,7 +112,7 @@ print 3 * 5 # => 15
 >>> a
 array([[1, 2],
        [3, 4]])
->>> b = np.array(np.arange(10))
+>>> b = np.arange(10)
 >>> b
 array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 >>> c = b.reshape(2,5)
@@ -115,6 +120,18 @@ array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 array([[0, 1, 2, 3, 4],
        [5, 6, 7, 8, 9]])
 ```
+
+`np.array`:リストから配列を作る<br/>
+`np.arange`:等間隔の値を持つ配列を作る<br/>
+`np.ndarray.reshape`:配列の形を変える
+
+
+---
+# 行列の演算
+
+* 和・差には普通に「-」「+」を使う。
+* 行列の積にはnp.dotをつかう
+* 「*（アスタリスク）」は行列の積ではなく、要素ごとの積なので注意。
 
 ---
 
@@ -419,3 +436,194 @@ class:middle,center
 # scikit-learn
 
 ---
+# 線形回帰
+
+---
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn import linear_model, datasets
+
+# 乱数によりデータを生成
+np.random.seed(0)
+regdata = datasets.make_regression(100, 1, noise=20.0)
+
+# 学習を行いモデルのパラメータを表示
+lin = linear_model.LinearRegression()
+lin.fit(regdata[0], regdata[1])
+print("coef and intercept :", lin.coef_, lin.intercept_)
+print("score :", lin.score(regdata[0], regdata[1]))
+
+# グラフを描画
+xr = [-2.5, 2.5]
+plt.plot(xr, lin.coef_ * xr + lin.intercept_)
+plt.scatter(regdata[0], regdata[1])
+
+plt.show()
+```
+
+---
+## 特徴ベクトルが多次元の場合（糖尿病データ）
+
+```python
+from sklearn import linear_model, datasets
+
+# データの読み込み
+diabetes = datasets.load_diabetes()
+
+# データを訓練用と評価用に分ける
+data_train = diabetes.data[:-20]
+target_train = diabetes.target[:-20]
+data_test = diabetes.data[-20:]
+target_test = diabetes.target[-20:]
+
+# 学習させる
+lin = linear_model.LinearRegression()
+lin.fit(data_train, target_train)
+
+# 当てはまり度合いを表示
+print("Score :", lin.score(data_test, target_test))
+
+# 最初の評価用データについて結果を予想して、実際の値と並べて表示
+print("Prediction :", lin.predict(data_test[0]))  # 予想
+print("Actual value :", target_test[0])  # 実際の値
+```
+
+---
+# ロジスティック回帰
+
+二値分類の予測手法。
+
+```python
+import sklearn.datasets as datasets
+from sklearn.linear_model import LogisticRegression
+from sklearn import cross_validation
+
+# データの読み込み
+iris = datasets.load_iris()
+
+# 種類が2であるものを捨てる
+data = iris.data[iris.target != 2]
+target = iris.target[iris.target != 2]
+
+# ロジスティック回帰による学習と交差検定による評価
+logi = LogisticRegression()
+scores = cross_validation.cross_val_score(logi, data, target, cv=5)
+
+# 結果を表示する
+print(scores)
+```
+---
+# 交差検定（クロスバリデーション）
+
+データを$n$個に分割して、そのうちの一つを評価用に、それ以外を訓練用に使うということを繰り返す手法。
+
+データが少ない時に有効。
+
+---
+コンストラクタの引数を変えてみよう
+
+```python
+logi = LogisticRegression(C=0.002)
+```
+
+```python
+logi = LogisticRegression(C=0.001)
+```
+
+何が起こるか？
+
+この$C$ってどういう意味？
+
+---
+
+
+---
+# パラメータとハイパーパラメータ
+
+* パラメータ：学習の過程で変化していくもの
+* ハイパーパラメータ：事前に一つ決めておいて、学習の途中では変わらないもの
+
+---
+# サポートベクターマシン（SVM）
+
+多値分類に有効な手法。
+
+```
+from sklearn import datasets
+from sklearn import svm
+from sklearn import cross_validation
+
+# データの読み込み
+iris = datasets.load_iris()
+
+# 学習
+svc = svm.SVC()
+scores = cross_validation.cross_val_score(svc, iris.data, iris.target, cv=5)
+
+# 結果表示
+print(scores)
+print("Accuracy:", scores.mean())
+```
+
+---
+```
+from sklearn import datasets
+from sklearn import svm
+from sklearn.decomposition import PCA
+import numpy as np
+import matplotlib.pyplot as plt
+
+# データの読み込み
+iris = datasets.load_iris()
+
+# PCAによるデータ変換
+pca = PCA(n_components=2)
+data = pca.fit(iris.data).transform(iris.data)
+
+# メッシュ作成
+datamax = data.max(axis=0) + 1
+datamin = data.min(axis=0) - 1
+n = 200
+X, Y = np.meshgrid(np.linspace(datamin[0], datamax[0], n),
+                   np.linspace(datamin[1], datamax[1], n))
+
+# 分類
+svc = svm.SVC()
+svc.fit(data, iris.target)
+Z = svc.predict(np.c_[X.ravel(), Y.ravel()])
+
+# 描画
+plt.contourf(
+    X, Y, Z.reshape(X.shape), levels=[-0.5, 0.5, 1.5, 2.5],
+    colors=["r", "g", "b"])
+for i, c in zip([0, 1, 2], ["r", "g", "b"]):
+    d = data[iris.target == i]
+    plt.scatter(d[:, 0], d[:, 1], c=c)
+plt.show()
+```
+
+---
+
+```
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+
+# データの生成
+np.random.seed(0)
+X = np.r_[np.random.randn(30, 2) + [2, 2],
+          np.random.randn(30, 2) + [0, -2],
+          np.random.randn(30, 2) + [-2, 2]]
+
+# 学習
+kmeans = KMeans(n_clusters=3)
+kmeans.fit(X)
+
+# 描画
+markers = ["o", "v", "x"]
+for i in range(3):
+    xx = X[kmeans.labels_ == i]
+    plt.scatter(xx[:, 0], xx[:, 1], c="k", marker=markers[i])
+plt.show()
+```
