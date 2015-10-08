@@ -24,7 +24,15 @@ class:center, middle
 * サンプルコードはできるだけ自分の手で打ち込みましょう
     - 写経大事。理解した「つもり」にならないためにも
     - とはいっても、遅れそうなときは積極的にコピペしましょう
+* サンプルコードは一行ずつ説明していきます
+    - 「なぜこうなるのか」の説明を大事にしたい
 * 数式はできるだけ使いません。なので、アルゴリズムの中身についてあまり突っ込みません（突っ込めません）。
+
+---
+## 今日やらないこと
+
+* IPython（知ってる人は使ってもいいよ）
+* Deep Learning（流行ってるけど...）
 
 ---
 ## 推薦図書（というか宣伝）
@@ -36,12 +44,7 @@ class:center, middle
 ---
 # 機械学習とは
 
-データの集まりから学習し、法則性を見つけ出す仕組みのこと
-
----
-# 応用例
-
-
+データの集まりから学習し、法則性を見つけ出し、それを予測や意思決定に利用する仕組みのこと。
 ---
 # 機械学習のタスク
 
@@ -62,9 +65,19 @@ class:center, middle
     - 部分的に正解が与えられている
 
 ---
+# 用語
+
+* 学習（訓練）データ：機械学習システムに学習させるために入力するデータ
+* モデル：学習によって
+* 評価用データ：学習したモデルが正しく機能するかを評価するためのデータ
+
+---
 # 教師付き学習の例
 
-* 植物の分類
+* スパム判定
+* 植物の分類（後述のあやめデータなど）
+* 手書き文字の認識
+
 ---
 # 教師なし学習の例
 
@@ -514,9 +527,10 @@ scores = cross_validation.cross_val_score(logi, data, target, cv=5)
 print(scores)
 ```
 ---
-# 交差検定（クロスバリデーション）
+## 交差検定（クロスバリデーション）
 
 データを$n$個に分割して、そのうちの一つを評価用に、それ以外を訓練用に使うということを繰り返す手法。
+（図を入れる）
 
 データが少ない時に有効。
 
@@ -533,10 +547,7 @@ logi = LogisticRegression(C=0.001)
 
 何が起こるか？
 
-この$C$ってどういう意味？
-
----
-
+この`C`ってどういう意味？
 
 ---
 # パラメータとハイパーパラメータ
@@ -544,12 +555,27 @@ logi = LogisticRegression(C=0.001)
 * パラメータ：学習の過程で変化していくもの
 * ハイパーパラメータ：事前に一つ決めておいて、学習の途中では変わらないもの
 
+```python
+logi = LogisticRegression(C=0.001)
+```
+この`C`はハイパーパラメータ
+
+ではこの`C`の意味は？→ドキュメント参照
+
+---
+## scikit-learnのドキュメント
+
+<img src="logistic_regression.png"/>
+という数式がわかってなくても、これがハイパーパラメータであることがわかれば、いろいろ試してみていいものを選ぶべきということがわかる。
+
+もちろん、数式をわかっているほうがあたりがつけやすいというアドバンテージがある。
+
 ---
 # サポートベクターマシン（SVM）
 
 多値分類に有効な手法。
 
-```
+```python
 from sklearn import datasets
 from sklearn import svm
 from sklearn import cross_validation
@@ -567,7 +593,15 @@ print("Accuracy:", scores.mean())
 ```
 
 ---
-```
+# 主成分分析（PCA）
+
+* 点列が「できるだけバラける」平面（部分空間）への射影
+* 特異値分解などのアルゴリズムを利用
+
+---
+
+点列がバラける空間への射影をした上での分類の図示：
+```python
 from sklearn import datasets
 from sklearn import svm
 from sklearn.decomposition import PCA
@@ -592,7 +626,12 @@ X, Y = np.meshgrid(np.linspace(datamin[0], datamax[0], n),
 svc = svm.SVC()
 svc.fit(data, iris.target)
 Z = svc.predict(np.c_[X.ravel(), Y.ravel()])
+```
+(次のページに続く）
 
+---
+
+```python
 # 描画
 plt.contourf(
     X, Y, Z.reshape(X.shape), levels=[-0.5, 0.5, 1.5, 2.5],
@@ -604,8 +643,37 @@ plt.show()
 ```
 
 ---
+### ハイパーパラメータをいじってみよう
 
-```
+まずはドキュメントを見てみる　→いろいろとややこしい
+
+* kernel functionを選べる　→kernel functionってなに？
+* kernel functionによって有効なパラメーが違う　→数式を参照
+
+という難しい話を忘れて、ひとつだけいじってみます。
+
+---
+~~~python
+svc = svm.SVC(C=100)
+~~~
+
+~~~python
+svc = svm.SVC(C=100000)
+~~~
+
+こうするとどうなるか？
+
+---
+
+---
+# KMeans法
+
+* 教師なし学習
+* 空間上の点列を分類する
+
+---
+
+```python
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
