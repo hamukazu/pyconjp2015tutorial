@@ -46,13 +46,6 @@ class:center, middle
 
 データの集まりから学習し、法則性を見つけ出し、それを予測や意思決定に利用する仕組みのこと。
 ---
-# 機械学習のタスク
-
-* 推論
-* 回帰
-* 分類
-
----
 # 機械学習の種類
 
 * 教師付き
@@ -68,7 +61,6 @@ class:center, middle
 # 用語
 
 * 学習（訓練）データ：機械学習システムに学習させるために入力するデータ
-* モデル：学習によって
 * 評価用データ：学習したモデルが正しく機能するかを評価するためのデータ
 
 ---
@@ -80,6 +72,9 @@ class:center, middle
 
 ---
 # 教師なし学習の例
+
+* ニュース記事の分類
+* アクセスログの異常検知
 
 ---
 class: center,middle
@@ -293,7 +288,18 @@ array([0, 1, 2, 3, 4, 5])
 ```
 
 ---
-# 疎行列
+# 疎行列とは
+
+* ほとんどの要素が0であるような行列
+* 内部的に0でない要素を覚えておくことで、メモリ消費と計算量を節約できる。
+
+---
+## scikit-learnの疎行列型
+
+* `lil_matrix`はデータを設定するのに便利だが、計算には向いてない
+* 計算するときには`csr_matrix`か`csc_matrx`を使う
+* `csr_matrix`は行を取り出すのが高速で`csc_matrix`は列を取り出すのが高速
+* `lil_matrix`を生成して値を設定し、その後`csr_matrix`か`csc_matrx`に変換して計算するのが一般的
 
 ---
 
@@ -503,6 +509,30 @@ print("Actual value :", target_test[0])  # 実際の値
 ```
 
 ---
+## データ形式
+
+<img src="diabetes.png" height=300 />
+
+他のデータも大体このような形式。
+
+`data`は各行が各サンプルに対応、それぞれのラベルが`target`の要素。`data`のサイズが$n\times m$のとき、`target`のサイズは$n$になる。
+
+---
+## scikit-learnの一般的な使い方
+
+教師あり学習
+```
+    model.fit(data,target)
+    result = model.predict(test_data)
+```
+
+教師なし学習
+```
+    model.fit(data)
+```
+
+---
+
 # ロジスティック回帰
 
 二値分類の予測手法。
@@ -527,7 +557,7 @@ scores = cross_validation.cross_val_score(logi, data, target, cv=5)
 print(scores)
 ```
 ---
-## 交差検定（クロスバリデーション）
+### 交差検定（クロスバリデーション）
 
 データを$n$個に分割して、そのうちの一つを評価用に、それ以外を訓練用に使うということを繰り返す手法。
 （図を入れる）
@@ -565,7 +595,8 @@ logi = LogisticRegression(C=0.001)
 ---
 ## scikit-learnのドキュメント
 
-<img src="logistic_regression.png"/>
+<img src="logistic_regression.png" height=300/>
+
 という数式がわかってなくても、これがハイパーパラメータであることがわかれば、いろいろ試してみていいものを選ぶべきということがわかる。
 
 もちろん、数式をわかっているほうがあたりがつけやすいというアドバンテージがある。
@@ -653,6 +684,7 @@ plt.show()
 という難しい話を忘れて、ひとつだけいじってみます。
 
 ---
+
 ~~~python
 svc = svm.SVC(C=100)
 ~~~
@@ -664,6 +696,15 @@ svc = svm.SVC(C=100000)
 こうするとどうなるか？
 
 ---
+## 過学習
+
+訓練データが完璧に分類できていればいいのか？
+
+No! 訓練データは正しく計算できるが、他のデータが来たら正しく分類できなくなる可能性も。この状態を過学習（オーバーフィッティング）と呼ぶ。
+
+過学習を防ぐには？
+* 可視化して常識（またはドメイン知識）を働かせる（訂正評価）
+* 交差検定が有効なことも
 
 ---
 # KMeans法
@@ -689,9 +730,140 @@ kmeans = KMeans(n_clusters=3)
 kmeans.fit(X)
 
 # 描画
-markers = ["o", "v", "x"]
+colors = ["r", "g", "b"]
 for i in range(3):
     xx = X[kmeans.labels_ == i]
-    plt.scatter(xx[:, 0], xx[:, 1], c="k", marker=markers[i])
+    plt.scatter(xx[:, 0], xx[:, 1], c=colors[i])
 plt.show()
 ```
+
+---
+## 疎行列を使った例
+
+MovieLensのデータ（ml-100k）を使って、似たような映画をまとめてみる。
+```python
+from sklearn.cluster import KMeans
+from scipy import sparse
+
+# 嗜好データの読み込み
+data = []
+max_user = 0
+max_item = 0
+for line in open("u.data"):
+    a = line.rstrip().split("\t")
+    user = int(a[0])
+    item = int(a[1])
+    rate = int(a[2])
+    data.append((user, item, rate))
+    if user > max_user:
+        max_user = user
+    if item > max_item:
+        max_item = item
+
+# 疎行列への設定
+mat = sparse.lil_matrix((max_item, max_user))
+for u, i, r in data:
+    mat[i - 1, u - 1] = r
+
+# 映画名の読み込み
+movies = {}
+for line in open("u.item"):
+    a = line.rstrip().split("|")
+    movies[int(a[0])] = a[1]
+```
+---
+（続き）
+```python
+# クラスタリング
+kmeans = KMeans(n_clusters=20)
+kmeans.fit(mat)
+
+clusters = [[] for _ in range(20)]
+for i, label in enumerate(kmeans.labels_):
+    clusters[label].append(movies[i + 1])
+
+# クラスタのサイズ順（昇順）に表示
+clusters = sorted(clusters, key=len)
+for i in range(20):
+    print("-" * 60)
+    for m in clusters[i]:
+        print(m)
+```
+---
+実行結果（抜粋）
+
+```
+------------------------------------------------------------
+Star Wars (1977)
+Return of the Jedi (1983)
+------------------------------------------------------------
+Fargo (1996)
+Godfather, The (1972)
+------------------------------------------------------------
+Contact (1997)
+Scream (1996)
+------------------------------------------------------------
+Mighty Aphrodite (1995)
+Postino, Il (1994)
+Cold Comfort Farm (1995)
+Lone Star (1996)
+Big Night (1996)
+Sense and Sensibility (1995)
+Emma (1996)
+Secrets & Lies (1996)
+------------------------------------------------------------
+Devil's Own, The (1997)
+Full Monty, The (1997)
+English Patient, The (1996)
+Liar Liar (1997)
+Air Force One (1997)
+L.A. Confidential (1997)
+Titanic (1997)
+Conspiracy Theory (1997)
+Saint, The (1997)
+```
+---
+（続き）
+```
+------------------------------------------------------------
+Toy Story (1995)
+Twelve Monkeys (1995)
+Birdcage, The (1996)
+Rock, The (1996)
+Twister (1996)
+Independence Day (ID4) (1996)
+Willy Wonka and the Chocolate Factory (1971)
+Star Trek: First Contact (1996)
+Men in Black (1997)
+Mission: Impossible (1996)
+------------------------------------------------------------
+Pulp Fiction (1994)
+Blade Runner (1982)
+Terminator 2: Judgment Day (1991)
+Silence of the Lambs, The (1991)
+Monty Python and the Holy Grail (1974)
+Empire Strikes Back, The (1980)
+Princess Bride, The (1987)
+Raiders of the Lost Ark (1981)
+Aliens (1986)
+Alien (1979)
+Terminator, The (1984)
+------------------------------------------------------------
+```
+
+---
+## 時間があまったらやってみる
+
+* カリフォルニア家賃データ
+* 手書き数字データ
+* 顔画像データ
+
+---
+# まとめ
+
+* 機械学習関係ライブラリを、使うだけなら簡単
+* 評価の仕組みも用意してある
+* とにかくデータを可視化して「観察してみる」の大事
+* matplotlibを使いこなせると強い
+* ギリギリまでチューニングしたいとか、新たなアルゴリズムを試したいというときに、内部アルゴリズムを含めて知っていることはメリットに
+
