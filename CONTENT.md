@@ -75,6 +75,15 @@ PyCon JP 2015のスポンサーです！<br/>
 * サンプルコードは一行ずつ説明していきます
     - 「なぜこうなるのか」の説明を大事にしたい
 * 数式はできるだけ使いません。なので、アルゴリズムの中身についてあまり突っ込みません（突っ込めません）。
+* エディタはなんでもいいですが、Emacsがオススメです。
+    - Python向けの設定については、私のブログ参照： [http://hamukazu.com/2014/12/05/setting-emacs-for-python/](http://hamukazu.com/2014/12/05/setting-emacs-for-python/)
+
+---
+## 準備
+
+後で使うので、MovieLensのデータ「ml-100k.zip」をダウンロードしておいてください（サイズ5M）
+
+[http://grouplens.org/datasets/movielens/](http://grouplens.org/datasets/movielens/)
 
 ---
 ## 今日やらないこと
