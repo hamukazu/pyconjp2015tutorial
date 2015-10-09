@@ -1,6 +1,11 @@
 class:center, middle
 
-# PyCon JP チュートリアル
+## PyCon JP 2015 チュートリアル
+# Pythonを使った機械学習入門
+### 2015年10月9日
+### 加藤公一
+### シルバーエッグテクノロジー株式会社
+
 
 ---
 ## 全体の目次
@@ -10,6 +15,41 @@ class:center, middle
 * matplotlibを使った可視化
 * scikit-learnを使った実験
 
+---
+## 自己紹介
+
+加藤公一（きみかず）<br/>
+シルバーエッグテクノロジー（株）<br/>
+チーフサイエンティスト
+
+普段の仕事：<br/>
+研究開発。特に機械学習を使ったレコメンデーションエンジンの改善、新製品候補プロト開発など。<br/>
+どちらかというと、scikit-learnは使わずにゴリゴリ書くことが多い。
+
+Python歴、機械学習歴ともに3年くらい。
+
+Twitter: @hamukazu
+
+趣味： 筋トレ
+
+---
+## 会社の紹介
+
+シルバーエッグテクノロジー株式会社
+
+<img src="silveregg.png" height=300/>
+
+創業：1998年<br/>
+CEO：Tom Foley<br/>
+主なサービス：レコメンデーションシステム、リターゲティング広告
+
+PyCon JP 2015のスポンサーです！<br/>
+ジョブフェアでもプレゼンします！
+
+---
+## 資料
+
+この資料は、[http://hamukazu.github.io/pyconjp2015tutorial/](http://hamukazu.github.io/pyconjp2015tutorial/)においてあります。
 ---
 ## 注意事項
 
@@ -457,7 +497,12 @@ class:middle,center
 ---
 # 線形回帰
 
+出力を入力の線形関数で表現して予測する手法
+
+<img src="fig3-1.png" height=300 />
 ---
+### コード例
+
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
@@ -482,7 +527,7 @@ plt.show()
 ```
 
 ---
-## 特徴ベクトルが多次元の場合（糖尿病データ）
+### 特徴ベクトルが多次元の場合（糖尿病データ）
 
 ```python
 from sklearn import linear_model, datasets
@@ -560,7 +605,8 @@ print(scores)
 ### 交差検定（クロスバリデーション）
 
 データを$n$個に分割して、そのうちの一つを評価用に、それ以外を訓練用に使うということを繰り返す手法。
-（図を入れる）
+
+<img src="cv.png"/>
 
 データが少ない時に有効。
 
@@ -590,7 +636,7 @@ logi = LogisticRegression(C=0.001)
 ```
 この`C`はハイパーパラメータ
 
-ではこの`C`の意味は？→ドキュメント参照
+ではこの`C`の意味は？ →ドキュメント参照
 
 ---
 ## scikit-learnのドキュメント
