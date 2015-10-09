@@ -50,6 +50,14 @@ PyCon JP 2015のスポンサーです！<br/>
 ## 資料
 
 この資料は、[http://hamukazu.github.io/pyconjp2015tutorial/](http://hamukazu.github.io/pyconjp2015tutorial/)においてあります。
+
+---
+## チュートリアルの目標
+
+* scikit-learnの使い方がわかるようになる。特に、本家オフィシャルサイトにあるサンプルコードの意味がわかるようになる。
+* 機械学習の主要アルゴリズムについてざっくり把握する。
+* scikit-learnのAPIドキュメントを読んでわかるようになるための下地を作る。
+
 ---
 ## 注意事項
 
@@ -407,6 +415,16 @@ plt.show()
 ```
 
 <img src="fig2-31.png" height=300/>
+---
+### 同じデータで散布図
+
+```
+>>> plt.scatter(x,y)
+<matplotlib.collections.PathCollection object at 0x7f88bbc22400>
+>>> plt.show()
+```
+
+<img src="scatter.png" height=300/>
 
 ---
 
@@ -626,7 +644,7 @@ logi = LogisticRegression(C=0.001)
 この`C`ってどういう意味？
 
 ---
-# パラメータとハイパーパラメータ
+## パラメータとハイパーパラメータ
 
 * パラメータ：学習の過程で変化していくもの
 * ハイパーパラメータ：事前に一つ決めておいて、学習の途中では変わらないもの
@@ -805,7 +823,11 @@ for line in open("u.data"):
         max_user = user
     if item > max_item:
         max_item = item
+```
+---
+（続き）
 
+```python
 # 疎行列への設定
 mat = sparse.lil_matrix((max_item, max_user))
 for u, i, r in data:
@@ -816,10 +838,6 @@ movies = {}
 for line in open("u.item"):
     a = line.rstrip().split("|")
     movies[int(a[0])] = a[1]
-```
----
-（続き）
-```python
 # クラスタリング
 kmeans = KMeans(n_clusters=20)
 kmeans.fit(mat)
