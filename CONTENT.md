@@ -844,7 +844,7 @@ for u, i, r in data:
 
 # 映画名の読み込み
 movies = {}
-for line in open("u.item"):
+for line in open("u.item", encoding="ISO-8859-1"):
     a = line.rstrip().split("|")
     movies[int(a[0])] = a[1]
 # クラスタリング
